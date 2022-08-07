@@ -13,14 +13,8 @@ const connection =
 
 var port = process.env.PORT || 3000;
 
-app.get('/',(req, res)=>{
-connection.query('SELECT * FROM items',(error,results)=>{
-    res.send('hello'+results[0].name);
-      console.log(results)
-      console.log(results[0])
-      console.log(results[0].name)
-  })
-  })
+
+
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
