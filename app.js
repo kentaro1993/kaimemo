@@ -22,6 +22,11 @@ const connection =
       console.log(results[0].name)
   })
 
+  var serveStatic = require('serve-static');
+  app.use(serveStatic(__dirname + "/dist"));
+
+
+
 
 app.get('/', (req, res) => {
   res.render('top.ejs');
