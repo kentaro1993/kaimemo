@@ -1,36 +1,16 @@
-const express = require('express')
-var mysql = require('mysql')
-const app = express()
-
-const connection =
-   mysql.createConnection({
-      host:'us-cdbr-east-06.cleardb.net',
-      user:'b30232f422ebcf',
-      password:'4d1d89e0',
-      database:'heroku_00afb7330dc1246'
-   });
-
-
-var port = process.env.PORT || 3000;
-
-
-
-
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
-
-
-
-
-
-
-
-
-
+const express = require('express');
+const mysql = require('mysql');
+const app = express();
 
 app.use(express.static('public'));
 app.use(express.urlencoded({extended: false}));
 
-
+const connection = mysql.createConnection({
+  host: 'us-cdbr-east-06.cleardb.net',
+  user: 'b30232f422ebcf',
+  password: '4d1d89e0',
+  database: 'heroku_00afb7330dc1246'
+});
 
 app.get('/', (req, res) => {
   res.render('top.ejs');
