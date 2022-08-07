@@ -5,12 +5,23 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.urlencoded({extended: false}));
 
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'kentaro1993',
-  database: 'list_app'
-});
+
+
+const connection =
+   mysql.createConnection({
+      host:'us-cdbr-east-06.cleardb.net',
+      user:'b30232f422ebcf',
+      password:'4d1d89e0',
+      database:'heroku_00afb7330dc1246'
+   });
+
+   connection.query('SELECT * FROM items',(error,results)=>{
+    res.send('hello'+results[0].name+':'+results[0].text);
+      console.log(results)
+      console.log(results[0])
+      console.log(results[0].name)
+  })
+
 
 app.get('/', (req, res) => {
   res.render('top.ejs');
