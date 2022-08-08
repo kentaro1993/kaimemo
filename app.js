@@ -1,7 +1,3 @@
-const express = require('express');
-const mysql = require('mysql');
-const app = express();
-
 app.use(express.static('public'));
 app.use(express.urlencoded({extended: false}));
 
@@ -67,6 +63,40 @@ app.post('/delete/:id', (req, res) => {
                 res.redirect('/index');
                 }
               );
+            });
+
+
+
+
+
+
+            var express = require('express');
+            var mysql = require('mysql2');
+            var app = express();
+            
+            
+            var pool = mysql.createPool(db_config);
+            
+            app.set('port', (process.env.PORT || 5000));
+            
+            app.get('/', function(request, response) {
+                console.log("heroku-mysql!!");
+                pool.getConnection(function(err, connection){
+                    connection.query('SELECT * FROM items WHERE id = ?', function(err, rows, fields){
+                    if(err){
+                        console.log('error: ', err);
+                        throw err;
+                    }
+                    response.writeHead(200,{'Content-Type': 'text/plain'});
+                    response.write(rows[0].message);
+                    response.end();
+                    connection.release();
+                    });
+                });
+            });
+            
+            app.listen(app.get('port'), function() {
+              console.log('heroku-mysql app is running on port', app.get('port'));
             });
 
 
