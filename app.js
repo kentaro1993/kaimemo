@@ -70,12 +70,6 @@ app.post('/delete/:id', (req, res) => {
             });
 
 
-            rp = require('request-promise');
-
-            app.get('/spike', (req, res) => {
-              rp({url: 'https://kaimemo1993.herokuapp.com/', forever: true}).then((body) => res.send(body));
-            });
-
 
 
 app.listen(process.env.PORT || 3000);
