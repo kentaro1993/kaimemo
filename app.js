@@ -68,5 +68,17 @@ app.post('/delete/:id', (req, res) => {
                 }
               );
             });
-            
+
+
+
+
+            var pool = mysql.createPool(db_config);
+            pool.getConnection(function(err, connection){
+              connection.query('SELECT * FROM items WHERE id = ?', function(err, rows, fields){
+                  connection.release();
+                  });
+              });
+
+
+
 app.listen(process.env.PORT || 3000);
