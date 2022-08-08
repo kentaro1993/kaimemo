@@ -70,14 +70,11 @@ app.post('/delete/:id', (req, res) => {
             });
 
 
+            rp = require('request-promise');
 
-
-            pool = mysql.createPool(db_config);
-            pool.getConnection(function(err, connection){
-              connection.query('SELECT * FROM items WHERE id = ?', function(err, rows, fields){
-                  connection.release();
-                  });
-              });
+            app.get('/spike', (req, res) => {
+              rp({url: 'https://kaimemo1993.herokuapp.com/', forever: true}).then((body) => res.send(body));
+            });
 
 
 
