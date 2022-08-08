@@ -68,38 +68,5 @@ app.post('/delete/:id', (req, res) => {
                 }
               );
             });
-
-
-      
-
-
-            var pool = mysql.createPool(db_config);
-
-            app.set('port', (process.env.PORT || 5000));
             
-            app.get('/', function(request, response) {
-                console.log("heroku-mysql!!");
-                pool.getConnection(function(err, connection){
-                    connection.query('SELECT * FROM t_message WHERE id=1', function(err, rows, fields){
-                    if(err){
-                        console.log('error: ', err);
-                        throw err;
-                    }
-                    response.writeHead(200,{'Content-Type': 'text/plain'});
-                    response.write(rows[0].message);
-                    response.end();
-                    connection.release();
-                    });
-                });
-            });
-            
-            app.listen(app.get('port'), function() {
-              console.log('heroku-mysql app is running on port', app.get('port'));
-            });
-
-
-
-
-            
-
 app.listen(process.env.PORT || 3000);
