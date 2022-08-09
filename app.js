@@ -1,17 +1,16 @@
-var express = require('express');
-var mysql = require('mysql2');
-var app = express();
-
+const express = require('express');
+const mysql = require('mysql');
+const app = express();
 
 app.use(express.static('public'));
 app.use(express.urlencoded({extended: false}));
 
-var db_config = {
-    host: 'us-cdbr-east-06.cleardb.net',
+const connection = mysql.createConnection({
+  host: 'us-cdbr-east-06.cleardb.net',
   user: 'b30232f422ebcf',
   password: '4d1d89e0',
   database: 'heroku_00afb7330dc1246'
-};
+});
 
 app.get('/', (req, res) => {
   res.render('top.ejs');
@@ -69,6 +68,9 @@ app.post('/delete/:id', (req, res) => {
                 }
               );
             });
+
+
+
 
 
 app.listen(process.env.PORT || 3000);
