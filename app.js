@@ -1,48 +1,76 @@
-"use strict";
-const mysql = require('mysql2');
-// pool を Promise にするために必要.
-const util = require('util');
+const express = require('express');
+const mysql = require('mysql');
+const app = express();
 
-/* 接続情報. */
-const mySqlPoolOptions = {
+app.use(express.static('public'));
+app.use(express.urlencoded({extended: false}));
+
+const connection = mysql.createConnection({
   host: 'us-cdbr-east-06.cleardb.net',
   user: 'b30232f422ebcf',
   password: '4d1d89e0',
   database: 'heroku_00afb7330dc1246'
-};
-
-async function insertUserAsync(name) {
-  const pool = mysql.createPool(mySqlPoolOptions);
-  pool.query = util.promisify(pool.query);
-  try {
-    const res = await pool.query('INSERT INTO items (name) VALUES (?)', [name]);
-    return res.affectedRows == 1;
-  } catch (err) {
-    console.log(err);
-    return false;
-  } finally {
-    pool.end();
-  }
-}
-
-async function selectUsersAsync() {
-  const pool = mysql.createPool(mySqlPoolOptions);
-  pool.query = util.promisify(pool.query);
-  try {
-    const rows = await pool.query('SELECT * FROM items');
-    for (let row of rows) {
-      console.log(`${row.id} : ${row.name}`);
-    }
-  } catch (err) {
-    console.log(err);
-  } finally {
-    pool.end();
-  }
-}
-
-insertUserAsync('user 003').then(result => {
-  console.log(result);
-  return selectUsersAsync();
-}).then(() => {
-  console.log("finish");
 });
+
+app.get('/', (req, res) => {
+  res.render('top.ejs');
+});
+
+app.get('/index', (req, res) => {
+  connection.query(
+    'SELECT * FROM items',
+    (error, results) => {
+      res.render('index.ejs', {items: results});
+    }
+  );
+});
+
+app.get('/new', (req, res) => {
+  res.render('new.ejs');
+});
+
+app.post('/create', (req, res) => {
+  connection.query(
+    'INSERT INTO items (name) VALUES (?)',
+    [req.body.itemName],
+    (error, results) => {
+      res.redirect('/index');
+    }
+  );
+});
+
+app.post('/delete/:id', (req, res) => {
+    connection.query(
+        'DELETE FROM items WHERE id = ?',
+    [req.params.id],
+    (error,results) => {
+      res.redirect('/index');
+    }
+        );
+    });
+
+    app.get('/edit/:id', (req, res) => {
+        connection.query(
+            'SELECT * FROM items WHERE id = ?',
+            [req.params.id],
+            (error, results) => {
+        res.render('edit.ejs',{item:results[0]});
+        }
+          );
+        });
+
+        app.post('/update/:id', (req, res) => {
+            connection.query(
+                'UPDATE items SET name = ? WHERE id = ?',
+                [req.body.itemName , req.params.id],
+                (error, results) => {
+                res.redirect('/index');
+                }
+              );
+            });
+
+
+
+
+
+app.listen(process.env.PORT || 3000);
