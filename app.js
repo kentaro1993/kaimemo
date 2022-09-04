@@ -1,34 +1,48 @@
-var express = require('express');
-var mysql = require('mysql2');
-var app = express();
+"use strict";
+const mysql = require('mysql2');
+// pool を Promise にするために必要.
+const util = require('util');
 
-var db_config = {
+/* 接続情報. */
+const mySqlPoolOptions = {
   host: 'us-cdbr-east-06.cleardb.net',
   user: 'b30232f422ebcf',
   password: '4d1d89e0',
   database: 'heroku_00afb7330dc1246'
 };
 
-var pool = mysql.createPool(db_config);
+async function insertUserAsync(name) {
+  const pool = mysql.createPool(mySqlPoolOptions);
+  pool.query = util.promisify(pool.query);
+  try {
+    const res = await pool.query('INSERT INTO items (name) VALUES (?)', [name]);
+    return res.affectedRows == 1;
+  } catch (err) {
+    console.log(err);
+    return false;
+  } finally {
+    pool.end();
+  }
+}
 
-app.set('port', (process.env.PORT || 5000));
+async function selectUsersAsync() {
+  const pool = mysql.createPool(mySqlPoolOptions);
+  pool.query = util.promisify(pool.query);
+  try {
+    const rows = await pool.query('SELECT * FROM items');
+    for (let row of rows) {
+      console.log(`${row.id} : ${row.name}`);
+    }
+  } catch (err) {
+    console.log(err);
+  } finally {
+    pool.end();
+  }
+}
 
-app.get('/', function(request, response) {
-    console.log("heroku-mysql!!");
-    pool.getConnection(function(err, connection){
-        connection.query('SELECT * FROM items (name) VALUES (?)', function(err, rows, fields){
-        if(err){
-            console.log('error: ', err);
-            throw err;
-        }
-        response.writeHead(200,{'Content-Type': 'text/plain'});
-        response.write(rows[0].message);
-        response.end();
-        connection.release();
-        });
-    });
-});
-
-app.listen(app.get('port'), function() {
-  console.log('heroku-mysql app is running on port', app.get('port'));
+insertUserAsync('user 003').then(result => {
+  console.log(result);
+  return selectUsersAsync();
+}).then(() => {
+  console.log("finish");
 });
