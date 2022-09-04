@@ -5,7 +5,7 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.urlencoded({extended: false}));
 
-const connection = mysql.createPool({
+const connection = mysql.createConnection({
   host: 'us-cdbr-east-06.cleardb.net',
   user: 'b30232f422ebcf',
   password: '4d1d89e0',
